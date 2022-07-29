@@ -1,33 +1,14 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      docker: 18
-  pre_build:
-    commands:
-      - echo "Pre_build"
-      - echo "Logging in to Amazon ECR"
-      - $(aws ecr get-login  --no-include-email --region us-east-1)
   build:
     commands:
-      - echo "Build"
-      - echo "Entered build phase"
-      - echo "Building Java"
-      - cd  emp-rest-app
-      - mvn compile
-      - mvn package
-      - echo "Building the docker image"
-      - docker build -t service/emp-rest-app .
-      - docker tag service/emp-rest-app $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/preethi-service-registry:emp-rest-app
-
+      - echo Entered the build phase...
+      - mvn clean package
   post_build:
     commands:
-      - echo "Post_build"
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/preethi-service-registry:emp-rest-app
-      - printf '[{"name":"emp-rest-pp-container","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/preethi-service-registry:emp-rest-app > taskdefinition.json
-      - cat taskdefinition.json
-
+      - echo Build completed successfully
 artifacts:
   files:
-    - emp-rest-app/taskdefinition.json
+    - target/eureka-server-git.jar
+  discard-paths: yes
